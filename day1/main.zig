@@ -3,7 +3,7 @@ const std = @import("std");
 const Direction = enum { LEFT, RIGHT };
 const P = struct {
     dir: Direction,
-    rotations: i32,
+    rotation: i32,
 
     const Self = @This();
 
@@ -17,7 +17,14 @@ const P = struct {
                 }
                 break :blk dir;
             },
-            .rotations = try std.fmt.parseInt(i16, token[1..token.len], 10),
+            .rotation = try std.fmt.parseInt(i16, token[1..token.len], 10),
+        };
+    }
+
+    pub fn getRotation(self: *const Self) i32 {
+        return switch (self.dir) {
+            .LEFT => -self.rotation,
+            .RIGHT => self.rotation,
         };
     }
 };
@@ -28,10 +35,7 @@ fn part1(input: []const u8, start_point: u8) !i32 {
     var it = std.mem.tokenizeScalar(u8, input, '\n');
     while (it.next()) |token| {
         const p = try P.init(token);
-        const rot = switch (p.dir) {
-            .LEFT => -p.rotations,
-            .RIGHT => p.rotations,
-        };
+        const rot = p.getRotation();
         sp += rot;
         if (@mod(sp, 100) == 0) password += 1;
     }
@@ -45,11 +49,7 @@ fn part2(input: []const u8, start_point: u8) !i32 {
     var it = std.mem.tokenizeScalar(u8, input, '\n');
     while (it.next()) |token| {
         const p = try P.init(token);
-        const rot = switch (p.dir) {
-            .LEFT => -p.rotations,
-            .RIGHT => p.rotations,
-        };
-
+        const rot = p.getRotation();
         const sp_plus_rot = sp + rot;
         var rev: i32 = @intCast(@abs(@divTrunc(sp_plus_rot, 100)));
         if (sp != 0 and sp_plus_rot <= 0) {
