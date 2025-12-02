@@ -64,8 +64,8 @@ fn part2(input: []const u8, start_point: u8) !i32 {
 }
 
 pub fn main() !void {
-    std.debug.print("day1: {}\n", .{try part1(@embedFile("./input.txt"), 50)});
-    std.debug.print("day2: {}\n", .{try part2(@embedFile("./input.txt"), 50)});
+    std.debug.print("day1 - part1: {}\n", .{try part1(@embedFile("./input.txt"), 50)});
+    std.debug.print("day1 - part2: {}\n", .{try part2(@embedFile("./input.txt"), 50)});
 }
 
 test "part1" {
