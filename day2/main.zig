@@ -41,22 +41,19 @@ fn part2(input: []const u8) !i64 {
             const num = try std.fmt.bufPrint(&buff, "{}", .{i});
             const mid = @divTrunc(num.len, 2);
 
-            for (1..mid + 1) |j| {
+            counter += blk: for (1..mid + 1) |j| {
                 var it2 = std.mem.window(u8, num, j, j);
-                const fist_slice: []const u8 = it2.next().?;
-                var found: bool = true;
-                while (it2.next()) |slice| {
+                const fist_slice: []const u8 = it2.next().?; // this is going to have something always
+                const found_invalid_number: bool = invalid: while (it2.next()) |slice| {
                     if (!std.mem.eql(u8, slice, fist_slice)) {
-                        found = false;
-                        break;
+                        break :invalid false;
                     }
-                }
+                } else true;
 
-                if (found) {
-                    counter += @intCast(i);
-                    break;
+                if (found_invalid_number) {
+                    break :blk @intCast(i);
                 }
-            }
+            } else 0;
         }
     }
     return counter;
@@ -67,6 +64,7 @@ pub fn main() !void {
     std.debug.print("day2 - part2: {}\n", .{try part2(@embedFile("./input.txt"))});
 }
 
+// checking how this split works
 test "splitScalar" {
     const input = "83706740-83939522";
     var it = std.mem.splitScalar(u8, input, '-');
@@ -74,6 +72,7 @@ test "splitScalar" {
     try std.testing.expect(std.mem.eql(u8, it.rest(), "83939522"));
 }
 
+// checking how parsing numbers works
 test "parseNumers" {
     try std.testing.expectEqual(83939522, try std.fmt.parseInt(i64, "83939522", 10));
     try std.testing.expectEqual(83706740, try std.fmt.parseInt(i64, "83706740", 10));
