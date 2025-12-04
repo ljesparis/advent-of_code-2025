@@ -64,8 +64,9 @@ fn part2(input: []const u8, start_point: u8) !i32 {
 }
 
 pub fn main() !void {
-    std.debug.print("day1 - part1: {}\n", .{try part1(@embedFile("./input.txt"), 50)});
-    std.debug.print("day1 - part2: {}\n", .{try part2(@embedFile("./input.txt"), 50)});
+    const file = @embedFile("./input.txt");
+    std.debug.print("day1 - part1: {}\n", .{try part1(file, 50)});
+    std.debug.print("day1 - part2: {}\n", .{try part2(file, 50)});
 }
 
 test "part1" {
@@ -85,7 +86,7 @@ test "part1" {
     try std.testing.expectEqual(3, part1(input, 50));
 }
 
-test "part2.1" {
+test "part2" {
     const input =
         \\L68
         \\L30

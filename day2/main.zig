@@ -60,8 +60,9 @@ fn part2(input: []const u8) !i64 {
 }
 
 pub fn main() !void {
-    std.debug.print("day2 - part1: {}\n", .{try part1(@embedFile("./input.txt"))});
-    std.debug.print("day2 - part2: {}\n", .{try part2(@embedFile("./input.txt"))});
+    const file = @embedFile("./input.txt");
+    std.debug.print("day2 - part1: {}\n", .{try part1(file)});
+    std.debug.print("day2 - part2: {}\n", .{try part2(file)});
 }
 
 // checking how this split works
