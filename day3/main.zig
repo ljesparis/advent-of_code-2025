@@ -8,23 +8,22 @@ fn part1(input: []const u8) !i64 {
     var it = std.mem.tokenizeScalar(u8, input, '\n');
     var counter: i64 = 0;
     while (it.next()) |bank| {
-        var first_max: u8 = 0;
-        var index: usize = 0;
+        var max_found: u8 = 0;
+        var mindex: usize = 0;
         for (0..bank.len - 1) |i| {
-            const m = @max(first_max, bank[i]);
-            if (m > first_max) {
-                first_max = m;
-                index = i;
+            if (bank[i] > max_found) {
+                max_found = bank[i];
+                mindex = i;
             }
         }
 
         var second_max: u8 = 0;
-        for (index + 1..bank.len) |i| {
+        for (mindex + 1..bank.len) |i| {
             second_max = @max(second_max, bank[i]);
         }
 
         var buff: [3]u8 = undefined;
-        const num = try std.fmt.bufPrint(&buff, "{c}{c}", .{ first_max, second_max });
+        const num = try std.fmt.bufPrint(&buff, "{c}{c}", .{ max_found, second_max });
         buff[buff.len - 1] = 0;
 
         counter += try parseInt(i64, num);
@@ -43,17 +42,16 @@ fn part2(input: []const u8) !i64 {
 
         for (0..11) |i| {
             var max_found: u8 = 0;
-            var index_found: usize = 0;
+            var mindex: usize = 0;
             for (current_index..bank.len - 11 + i) |j| {
-                const m = @max(max_found, bank[j]);
-                if (m > max_found) {
-                    max_found = m;
-                    index_found = j;
+                if (bank[j] > max_found) {
+                    max_found = bank[j];
+                    mindex = j;
                 }
             }
 
             batteries.appendAssumeCapacity(max_found);
-            current_index = index_found + 1;
+            current_index = mindex + 1;
         }
 
         var second_max: u8 = 0;
