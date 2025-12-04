@@ -8,6 +8,8 @@ fn part1(input: []const u8) !i64 {
     var it = std.mem.tokenizeScalar(u8, input, '\n');
     var counter: i64 = 0;
     while (it.next()) |bank| {
+        var bff: [2]u8 = undefined;
+        var batteries = std.ArrayList(u8).initBuffer(&bff);
         var max_found: u8 = 0;
         var mindex: usize = 0;
         for (0..bank.len - 1) |i| {
@@ -17,16 +19,16 @@ fn part1(input: []const u8) !i64 {
             }
         }
 
-        var second_max: u8 = 0;
+        batteries.appendAssumeCapacity(max_found);
+
+        max_found = 0;
         for (mindex + 1..bank.len) |i| {
-            second_max = @max(second_max, bank[i]);
+            max_found = @max(max_found, bank[i]);
         }
 
-        var buff: [3]u8 = undefined;
-        const num = try std.fmt.bufPrint(&buff, "{c}{c}", .{ max_found, second_max });
-        buff[buff.len - 1] = 0;
+        batteries.appendAssumeCapacity(max_found);
 
-        counter += try parseInt(i64, num);
+        counter += try parseInt(i64, batteries.items);
     }
 
     return counter;
