@@ -88,7 +88,7 @@ fn countAdjacentRollOfPapers(comptime T: type, y: i16, x: i16, matrix: *const Ma
     }
 
     // we need to take into account the current node
-    // in the positions y and x passed as parameters
+    // in the position y and x.
     return roll_of_paper_counter + 1;
 }
 
