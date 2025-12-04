@@ -1,6 +1,6 @@
 const std = @import("std");
 
-// take it from https://www.reddit.com/r/Zig/comments/i8p2cd/trying_to_make_a_generic_matrix_type/
+// i took it from https://www.reddit.com/r/Zig/comments/i8p2cd/trying_to_make_a_generic_matrix_type/
 // and i did add a few changes to release memory and build the matrix from input
 pub fn Matrix(comptime T: type) type {
     return struct {
@@ -87,6 +87,8 @@ fn countAdjacentRollOfPapers(comptime T: type, y: i16, x: i16, matrix: *const Ma
         }
     }
 
+    // we need to take into account the current node
+    // in the positions y and x passed as parameters
     return roll_of_paper_counter + 1;
 }
 
@@ -96,7 +98,12 @@ fn part1(input: []const u8, allocator: std.mem.Allocator) !i64 {
     var counter: i64 = 0;
     for (0..matrix.height) |y| {
         for (0..matrix.width) |x| {
-            if (isRollOfPaper(matrix.data[y][x]) and countAdjacentRollOfPapers(u8, @intCast(y), @intCast(x), &matrix) <= 4) {
+            if (isRollOfPaper(matrix.data[y][x]) and countAdjacentRollOfPapers(
+                u8,
+                @intCast(y),
+                @intCast(x),
+                &matrix,
+            ) <= 4) {
                 counter += 1;
             }
         }
@@ -114,7 +121,12 @@ fn part2(input: []const u8, allocator: std.mem.Allocator) !i64 {
         var counter_by_cicly: i64 = 0;
         for (0..matrix.height) |y| {
             for (0..matrix.width) |x| {
-                if (isRollOfPaper(matrix.data[y][x]) and countAdjacentRollOfPapers(u8, @intCast(y), @intCast(x), &matrix) <= 4) {
+                if (isRollOfPaper(matrix.data[y][x]) and countAdjacentRollOfPapers(
+                    u8,
+                    @intCast(y),
+                    @intCast(x),
+                    &matrix,
+                ) <= 4) {
                     counter_by_cicly += 1;
                     matrix.data[y][x] = '.';
                 }
