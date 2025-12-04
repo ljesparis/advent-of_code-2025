@@ -70,8 +70,8 @@ fn part2(input: []const u8) !i64 {
 
 pub fn main() !void {
     const file = @embedFile("./input.txt");
-    std.debug.print("day2 - part1: {}\n", .{try part1(file)});
-    std.debug.print("day2 - part2: {}\n", .{try part2(file)});
+    std.debug.print("day3 - part1: {}\n", .{try part1(file)});
+    std.debug.print("day3 - part2: {}\n", .{try part2(file)});
 }
 
 test "part1" {
