@@ -10,9 +10,15 @@ const Range = struct { start: i64, end: i64 };
 
 fn part1(input: []const u8, allocator: std.mem.Allocator) !i64 {
     var valid_ranges: std.ArrayList(Range) = .empty;
-    defer valid_ranges.deinit(allocator);
+    var valid_ids: std.ArrayListUnmanaged(i64) = .empty;
+
+    defer {
+        valid_ranges.deinit(allocator);
+        valid_ids.deinit(allocator);
+    }
+
     var it = std.mem.tokenizeScalar(u8, input, '\n');
-    var valid_ids: i64 = 0;
+    var counter: i64 = 0;
     while (it.next()) |tmp| {
         if (std.mem.containsAtLeastScalar(u8, tmp, 1, '-')) {
             var ranges_it = std.mem.tokenizeScalar(u8, tmp, '-');
@@ -20,16 +26,19 @@ fn part1(input: []const u8, allocator: std.mem.Allocator) !i64 {
             const end = try parseInt(i64, ranges_it.next().?);
             try valid_ranges.append(allocator, .{ .start = start, .end = end });
         } else {
-            const id = try parseInt(i64, tmp);
-            for (valid_ranges.items) |range| {
-                if (id >= range.start and id <= range.end) {
-                    valid_ids += 1;
-                    break;
-                }
+            try valid_ids.append(allocator, try parseInt(i64, tmp));
+        }
+    }
+
+    for (valid_ids.items) |id| {
+        for (valid_ranges.items) |range| {
+            if (id >= range.start and id <= range.end) {
+                counter += 1;
+                break;
             }
         }
     }
-    return valid_ids;
+    return counter;
 }
 
 fn part2(input: []const u8, allocator: std.mem.Allocator) !i64 {
@@ -37,14 +46,12 @@ fn part2(input: []const u8, allocator: std.mem.Allocator) !i64 {
     defer ranges.deinit(allocator);
     var it = std.mem.tokenizeScalar(u8, input, '\n');
     while (it.next()) |tmp| {
-        if (std.mem.containsAtLeastScalar(u8, tmp, 1, '-')) {
-            var ranges_it = std.mem.tokenizeScalar(u8, tmp, '-');
-            const start = try parseInt(i64, ranges_it.next().?);
-            const end = try parseInt(i64, ranges_it.next().?);
-            try ranges.append(allocator, .{ .start = start, .end = end });
-        } else {
-            break;
-        }
+        if (!std.mem.containsAtLeastScalar(u8, tmp, 1, '-')) break;
+
+        var ranges_it = std.mem.tokenizeScalar(u8, tmp, '-');
+        const start = try parseInt(i64, ranges_it.next().?);
+        const end = try parseInt(i64, ranges_it.next().?);
+        try ranges.append(allocator, .{ .start = start, .end = end });
     }
 
     std.mem.sort(Range, ranges.items, {}, struct {
@@ -55,8 +62,7 @@ fn part2(input: []const u8, allocator: std.mem.Allocator) !i64 {
 
     var seen_ranges: std.ArrayListUnmanaged(Range) = .empty;
     defer seen_ranges.deinit(allocator);
-    try seen_ranges.append(allocator, ranges.items[0]);
-    for (ranges.items[1..]) |current_range| {
+    for (ranges.items) |current_range| {
         var i: usize = 0;
         var overlap: bool = false;
         while (i < seen_ranges.items.len) : (i += 1) {
@@ -64,9 +70,7 @@ fn part2(input: []const u8, allocator: std.mem.Allocator) !i64 {
             // current range already seen
             if (seen_range.start <= current_range.start and seen_range.end >= current_range.end) {
                 overlap = true;
-            }
-
-            if (current_range.start >= seen_range.start and current_range.start <= seen_range.end and current_range.end > seen_range.end) {
+            } else if (current_range.start >= seen_range.start and current_range.start <= seen_range.end and current_range.end > seen_range.end) {
                 seen_range.end = current_range.end;
                 overlap = true;
             } else if (current_range.end >= seen_range.start and current_range.end <= seen_range.end and current_range.start < seen_range.start) {
