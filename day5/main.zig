@@ -9,11 +9,11 @@ fn parseInt(comptime T: type, val: []const u8) !T {
 const Range = struct { start: i64, end: i64 };
 
 fn part1(input: []const u8, allocator: std.mem.Allocator) !i64 {
-    var valid_ranges: std.ArrayList(Range) = .empty;
+    var ranges: std.ArrayListUnmanaged(Range) = .empty;
     var valid_ids: std.ArrayListUnmanaged(i64) = .empty;
 
     defer {
-        valid_ranges.deinit(allocator);
+        ranges.deinit(allocator);
         valid_ids.deinit(allocator);
     }
 
@@ -24,14 +24,14 @@ fn part1(input: []const u8, allocator: std.mem.Allocator) !i64 {
             var ranges_it = std.mem.tokenizeScalar(u8, tmp, '-');
             const start = try parseInt(i64, ranges_it.next().?);
             const end = try parseInt(i64, ranges_it.next().?);
-            try valid_ranges.append(allocator, .{ .start = start, .end = end });
+            try ranges.append(allocator, .{ .start = start, .end = end });
         } else {
             try valid_ids.append(allocator, try parseInt(i64, tmp));
         }
     }
 
     for (valid_ids.items) |id| {
-        for (valid_ranges.items) |range| {
+        for (ranges.items) |range| {
             if (id >= range.start and id <= range.end) {
                 counter += 1;
                 break;
@@ -42,7 +42,7 @@ fn part1(input: []const u8, allocator: std.mem.Allocator) !i64 {
 }
 
 fn part2(input: []const u8, allocator: std.mem.Allocator) !i64 {
-    var ranges: std.ArrayList(Range) = .empty;
+    var ranges: std.ArrayListUnmanaged(Range) = .empty;
     defer ranges.deinit(allocator);
     var it = std.mem.tokenizeScalar(u8, input, '\n');
     while (it.next()) |tmp| {
