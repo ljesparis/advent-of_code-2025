@@ -134,14 +134,13 @@ fn part2(input: []const u8, allocator: std.mem.Allocator) !i64 {
             var number_as_str: std.ArrayListUnmanaged(u8) = .empty;
             defer number_as_str.deinit(allocator);
             var y: i64 = @intCast(height - 1);
-            while (y >= 0) {
+            while (y >= 0) : (y -= 1) {
                 const el = matrix.data[@intCast(y)][@intCast(x)];
                 if (el == '+' or el == '*') {
                     try symbols.append(allocator, el);
                 } else if (el >= '1' and el <= '9') {
                     try number_as_str.insert(allocator, 0, el);
                 }
-                y -= 1;
             }
 
             if (number_as_str.items.len > 0) {
