@@ -21,8 +21,9 @@ const Point3D = struct {
 };
 
 // structure to store distance
-// between the index of two points
-const PointsAB = struct {
+// between two points. We're storing
+// the index of each point.
+const PointAB = struct {
     i: usize, // point a index
     j: usize, // point b index
     distance: f32,
@@ -96,7 +97,7 @@ fn parseInput(
 
 fn combinations(
     points: *const std.ArrayListUnmanaged(Point3D),
-    points_ab: *std.ArrayListUnmanaged(PointsAB),
+    points_ab: *std.ArrayListUnmanaged(PointAB),
     allocator: std.mem.Allocator,
 ) !void {
     // combinations of all points and its distance
@@ -112,8 +113,8 @@ fn combinations(
 
     // keep the combinations with
     // the shortest distance at the top
-    std.mem.sort(PointsAB, points_ab.items, {}, struct {
-        fn cmp(_: void, p1: PointsAB, p2: PointsAB) bool {
+    std.mem.sort(PointAB, points_ab.items, {}, struct {
+        fn cmp(_: void, p1: PointAB, p2: PointAB) bool {
             return p1.distance < p2.distance;
         }
     }.cmp);
@@ -126,7 +127,7 @@ fn part1(input: []const u8, connections: usize, allocator: std.mem.Allocator) !i
 
     var count: i32 = 0;
     // 2 possible combinations
-    var points_combinations: std.ArrayListUnmanaged(PointsAB) = .empty;
+    var points_combinations: std.ArrayListUnmanaged(PointAB) = .empty;
     defer points_combinations.deinit(allocator);
     try combinations(&points, &points_combinations, allocator);
 
@@ -172,7 +173,7 @@ fn part2(input: []const u8, allocator: std.mem.Allocator) !i64 {
 
     var count: i64 = 0;
     // 2 possible combinations
-    var points_combinations: std.ArrayListUnmanaged(PointsAB) = .empty;
+    var points_combinations: std.ArrayListUnmanaged(PointAB) = .empty;
     defer points_combinations.deinit(allocator);
     try combinations(&points, &points_combinations, allocator);
 
@@ -180,7 +181,7 @@ fn part2(input: []const u8, allocator: std.mem.Allocator) !i64 {
     var unionFind = try UnionFind(usize).init(points_combinations.items.len, allocator);
     defer unionFind.deinit(allocator);
 
-    var point_ab: PointsAB = undefined;
+    var point_ab: PointAB = undefined;
     var cmp = points.items.len;
     var i: usize = 0;
     while (cmp > 1) : (i += 1) {
