@@ -42,11 +42,6 @@ const Rect = struct {
     }
 };
 
-fn greaterThan(context: void, a: Rect, b: Rect) std.math.Order {
-    _ = context;
-    return std.math.order(a.area(), b.area()).invert();
-}
-
 fn parseInput(input: []const u8, allocator: std.mem.Allocator, points: *std.ArrayListUnmanaged(Point)) !void {
     // parsing input
     var it = std.mem.splitScalar(u8, input, '\n');
@@ -65,8 +60,7 @@ fn part1(input: []const u8, allocator: std.mem.Allocator) !i64 {
     defer polygon.deinit(allocator);
     try parseInput(input, allocator, &polygon);
 
-    var rectangles = std.PriorityQueue(Rect, void, greaterThan).init(allocator, {});
-    defer rectangles.deinit();
+    var max_v: i64 = 0;
     for (polygon.items, 0..) |p1, i| {
         for (polygon.items[i + 1 ..]) |p2| {
             // i can find bigger rectangles
@@ -75,11 +69,11 @@ fn part1(input: []const u8, allocator: std.mem.Allocator) !i64 {
                 continue;
             }
 
-            try rectangles.add(.getRectangle(p1, p2));
+            max_v = @max(max_v, Rect.getRectangle(p1, p2).area());
         }
     }
 
-    return rectangles.items[0].area();
+    return max_v;
 }
 
 fn part2(input: []const u8, allocator: std.mem.Allocator) !i64 {
